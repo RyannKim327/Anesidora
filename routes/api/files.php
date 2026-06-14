@@ -4,8 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/api/files/top', function (Request $request) {
-  $topFiles = [
+$topFiles = [
     [
       'id' => 1,
       'name' => "Sample File.png",
@@ -78,7 +77,18 @@ Route::get('/api/files/top', function (Request $request) {
       'protected' => true,
       'downloads' => 512
     ]
-  ];
+];
 
-  return response()->json($topFiles);
+Route::get('/api/files/top', function (Request $request) use ($topFiles){
+    return response()->json($topFiles);
 });
+
+Route::get('/api/file/{id}', function (Request $request, $id) use ($topFiles) {
+    if(!isset($topFiles[$id - 1])){
+        return response()->json([
+            'error' => 'File not found'
+        ]);
+    }
+    return response()->json($topFiles[$id - 1]);
+});
+

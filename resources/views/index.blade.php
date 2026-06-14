@@ -44,8 +44,12 @@
 				container.classList.add(
 					'flex', 'flex-col', 'aspect-video',
 					'rounded', 'bg-[#0f172a]',
-					'w-[calc(50%-0.5rem)]', 'md:w-[calc(25%-0.5em)]', 'p-2'
+					'w-[calc(50%-0.5rem)]', 'md:w-[calc(25%-0.5em)]', 'p-2',
+					'cursor-pointer', 'hover:bg-slate-800', 'transition-colors'
 				)
+				container.onclick = () => {
+					location.href = `/file/${file.id}`
+				}
 
 				title.textContent = file.name
 				description.textContent = file.description

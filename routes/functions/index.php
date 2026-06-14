@@ -10,3 +10,7 @@ Route::get('/', function (Request $request) {
 Route::get('/about', function (Request $request) {
     return view('about');
 });
+
+Route::get('/file/{id}', function (Request $request, $id) {
+    return view('file-info', ['id' => $id]);
+});

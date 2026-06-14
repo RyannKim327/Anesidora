@@ -2,15 +2,15 @@
   <div class="flex flex-row items-center gap-5 md:gap-10 h-full">
     <span class="flex flex-row text-[1.25rem] text-[#3B82F6] font-extrabold">A<span class="hidden md:flex">nesidora</span></span>
     <ul class="flex flex-row gap-3 md:gap-2">
-      <li onclick="location.href = '/'">
+      <li class="cursor-pointer" onclick="location.href = '/'">
         <span class="hidden md:flex">Home</span>
         <i class="flex md:hidden! fa fa-regular fa-home"></i>
       </li>
-      <li onclick="location.href = '/about'">
+      <li class="cursor-pointer" onclick="location.href = '/about'">
         <span class="hidden md:flex">About</span>
         <i class="flex md:hidden! fa-regular fa-info"></i>
       </li>
-      <li onclick="location.href = 'files'">
+      <li class="cursor-pointer" onclick="location.href = 'files'">
         <span class="hidden md:flex">Public Files</span>
         <i class="flex md:hidden! fa fa-regular fa-folder-open"></i>
       </li>
