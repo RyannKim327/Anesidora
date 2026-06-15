@@ -17,5 +17,7 @@
       </div>
       <x-footer />
     </main>
+    @include('layout.register')
+    @include('layout.login')
   </body>
 </html>

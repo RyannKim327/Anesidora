@@ -18,16 +18,36 @@
   </div>
   <div class="flex flex-row gap-5 md:gap-10 items-center h-full">
     <input placeholder="Search File" class="border-[#4c58a6] border rounded-full px-5 py-1" />
-    @if (false)
+    @auth
       <div class="flex flex-row gap-2">
         <button class="bg-[#3B82F6] text-[#f8fafc] rounded-full px-5 py-1">Upload</button>
-        <button class="border border-[#64748b] rounded-full px-5 py-1">Profile</button>
+        <button onclick="logout()" class="border border-[#64748b] rounded-full px-5 py-1">Logout</button>
       </div>
     @else
       <div class="flex flex-row gap-2">
-        <button class="bg-[#3B82F6] text-[#f8fafc] rounded-full px-5 py-1">Register</button>
-        <button class="border border-[#64748b] rounded-full px-5 py-1">Login</button>
+        <button onclick="openRegisterModal()" class="bg-[#3B82F6] text-[#f8fafc] rounded-full px-5 py-1">Register</button>
+        <button onclick="openLoginModal()" class="border border-[#64748b] rounded-full px-5 py-1">Login</button>
       </div>
-    @endif
+    @endauth
   </div>
 </div>
+
+<script>
+    async function logout() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+            if (response.ok) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    }
+</script>
