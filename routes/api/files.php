@@ -92,3 +92,8 @@ Route::get('/api/file/{id}', function (Request $request, $id) use ($topFiles) {
     return response()->json($topFiles[$id - 1]);
 });
 
+Route::post('/api/file/upload', function (Request, $request){
+    return response()->json([
+        'message' => 'Uploaded'
+    ]);
+});
