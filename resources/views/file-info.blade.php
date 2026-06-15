@@ -132,11 +132,11 @@
             }
 
             // Populate file info
-            document.getElementById('file-name').textContent = file.name;
-            document.getElementById('file-description').textContent = file.description;
-            document.getElementById('file-downloads').textContent = file.downloads.toLocaleString();
+            document.getElementById('file-name').textContent = file.file;
+            document.getElementById('file-description').textContent = file.description || 'No description provided.';
+            document.getElementById('file-downloads').textContent = (file.downloads || 0).toLocaleString();
             
-            const extension = file.name.split('.').pop();
+            const extension = file.file.split('.').pop();
             document.getElementById('file-type').textContent = `${extension} File`;
             
             // Set icon based on type
@@ -147,13 +147,17 @@
             else if (['xls', 'xlsx'].includes(extension.toLowerCase())) iconElement.className = 'fa fa-file-excel-o text-4xl text-green-500';
             
             // Format date
-            const expDate = new Date(file.expiration * 1000);
-            document.getElementById('file-expiration').textContent = expDate.toLocaleDateString(undefined, { 
-                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
-            });
+            if (file.expiration) {
+                const expDate = new Date(file.expiration);
+                document.getElementById('file-expiration').textContent = expDate.toLocaleDateString(undefined, { 
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                });
+            } else {
+                document.getElementById('file-expiration').textContent = 'Never';
+            }
 
             // Handle protection
-            if (file.protected) {
+            if (file.password) {
                 passwordModal.classList.remove('hidden');
                 document.getElementById('file-status').innerHTML = `
                     <span class="w-2 h-2 rounded-full bg-amber-500"></span>
@@ -164,9 +168,7 @@
                     e.preventDefault();
                     const password = document.getElementById('file-password').value;
                     
-                    // For this demo, we'll just check if it's not empty
-                    // In a real app, you'd verify with the backend
-                    if (password.length >= 4) {
+                    if (password === file.password) {
                         passwordModal.classList.add('hidden');
                         fileCard.classList.remove('hidden');
                     } else {
@@ -178,8 +180,9 @@
             }
 
             document.getElementById('download-btn').onclick = () => {
-                alert(`Starting download for ${file.name}...`);
-                // location.href = file.url;
+                alert(`Starting download for ${file.file}...`);
+                // Note: To truly download from Telegram, we'd need to use getFile and then the bot file link
+                // For now, we'll just show the alert
             };
 
         } catch (error) {
