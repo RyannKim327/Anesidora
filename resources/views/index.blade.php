@@ -34,7 +34,7 @@
 					'flex', 'flex-row', 'w-full'
 				)
 
-				type.textContent = file.name.split(".")[file.name.split(".").length - 1]
+				type.textContent = file.file.split(".")[file.file.split(".").length - 1]
 				type.classList.add(
 					'px-3', 'text-[0.75rem]', 'rounded-full',
 					'bg-[#283044]'
@@ -48,10 +48,10 @@
 					'cursor-pointer', 'hover:bg-slate-800', 'transition-colors'
 				)
 				container.onclick = () => {
-					location.href = `/file/${file.id}`
+					location.href = `/file/${file.public_url}`
 				}
 
-				title.textContent = file.name
+				title.textContent = file.file
 				description.textContent = file.description
 
 				container.appendChild(head)

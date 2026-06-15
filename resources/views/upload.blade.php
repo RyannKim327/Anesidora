@@ -10,7 +10,7 @@
             <p class="text-[#64748b] mt-2 text-center text-lg">Share your files securely with anyone, anywhere.</p>
         </div>
 
-        <form id="upload-form" class="flex flex-col gap-6" autocomplete="false">
+        <form id="upload-form" class="flex flex-col gap-6" autocomplete="off">
             @csrf
             <div id="upload-errors" class="hidden bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-xl text-sm mb-4"></div>
             <div id="upload-success" class="hidden bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded-xl text-sm mb-4 text-center"></div>
@@ -113,6 +113,12 @@
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
             dropZone.classList.remove('border-[#3B82F6]', 'bg-[#3B82F6]/5');
+
+            if (eventName === 'drop' && e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                // Trigger the change event to update the UI
+                fileInput.dispatchEvent(new Event('change'));
+            }
         }, false);
     });
 
@@ -176,7 +182,7 @@
             progressContainer.classList.add('hidden');
         });
 
-        xhr.open('POST', '/upload');
+        xhr.open('POST', '/api/file/upload');
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         // CSRF Token is already in FormData from @csrf
 
