@@ -84,7 +84,7 @@ class UploadController extends Controller
             // Create record in database
             $fileRecord = FileHandling::create([
                 'file' => $request->name,
-                'user_id' => Auth::id() ?? 1, // Fallback for testing, should use Auth::id()
+                'user_id' => Auth::id(),
                 'private_url' => $fileId, // Use Telegram file_id as internal reference
                 'public_url' => Str::random(12), // Unique hash for our app's public link
                 'description' => $request->description ?? 'No description Provided',

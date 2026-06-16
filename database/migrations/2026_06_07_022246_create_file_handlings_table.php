@@ -14,7 +14,7 @@ return new class extends Migration
     Schema::create('file_handlings', function (Blueprint $table) {
       $table->id();
       $table->string('file');
-      $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+      $table->foreignUuid('user_id')->nullable()->constrained()->cascadeOnDelete();
       $table->string('private_url');
       $table->string('public_url');
       $table->text('description')->nullable();
