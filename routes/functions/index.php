@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function (Request $request) {
@@ -18,3 +20,32 @@ Route::get('/files', function (Request $request) {
 Route::get('/file/{id}', function (Request $request, $id) {
     return view('file-info', ['id' => $id]);
 });
+
+Route::get('/user/profile/{id?}', function (Request $request, $id = null) {
+
+    if ($id) {
+        $user = User::findOrFail($id);
+    } else {
+        if (! Auth::check()) {
+            return redirect('/');
+        }
+        $user = Auth::user();
+    }
+
+    $isOwner = Auth::check() && Auth::id() === $user->id;
+
+    $filesQuery = $user->files()->latest();
+
+    if (! $isOwner) {
+        $filesQuery->whereNull('password')->orWhere('password', '');
+    }
+
+    $files = $filesQuery->get();
+
+    return view('profile', [
+        'user' => $user,
+        'files' => $files,
+        'isOwner' => $isOwner,
+    ]);
+
+})->name('profile');
