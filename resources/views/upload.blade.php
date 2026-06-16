@@ -39,7 +39,7 @@
                         <option value="24h" selected>24 Hours</option>
                         <option value="7d">7 Days</option>
                         <option value="30d">30 Days</option>
-                        <option value="0">Lifetime</option>
+                        <option value="lifetime">Lifetime</option>
                     </select>
                 </div>
             </div>

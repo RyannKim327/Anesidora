@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/api/files/top', function (Request $request) {
     $files = FileHandling::whereNull('password')
+        ->where(function ($query) {
+            $query->whereNull('expiration')
+                ->orWhere('expiration', '>', now());
+        })
         ->orderBy('downloads', 'desc')
         ->latest()
         ->take(8)
@@ -18,8 +22,11 @@ Route::get('/api/files/top', function (Request $request) {
 
 Route::get('/api/files/public', function (Request $request) {
     $files = FileHandling::whereNull('password')
+        ->where(function ($query) {
+            $query->whereNull('expiration')
+                ->orWhere('expiration', '>', now());
+        })
         ->orderBy('downloads', 'desc')
-        ->where('expiration', '>=', time())
         ->latest()
         ->take(20)
         ->get();
@@ -36,7 +43,7 @@ Route::get('/api/file/{id}', function (Request $request, $id) {
         ], 404);
     }
 
-    if ($file->expiration > time() || $file->expiration == 0 || $file->expiration == null) {
+    if (! $file->expiration || $file->expiration->isFuture()) {
         return response()->json($file);
     }
 
@@ -56,7 +63,7 @@ Route::post('/api/file/{id}/download', function (Request $request, $id) {
     if ($file->password && $request->password !== $file->password) {
         return response()->json(['error' => 'Invalid password'], 403);
     }
-    if ($file->expiration > time() || $file->expiration == 0 || $file->expiration == null) {
+    if (! $file->expiration || $file->expiration->isFuture()) {
         // Increment downloads
         $file->increment('downloads');
 

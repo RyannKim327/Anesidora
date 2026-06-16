@@ -10,10 +10,16 @@
         <span class="hidden md:flex">About</span>
         <i class="flex md:hidden! fa-regular fa-info"></i>
       </li>
-      <li class="cursor-pointer" onclick="location.href = 'files'">
+      <li class="cursor-pointer" onclick="location.href = '/files'">
         <span class="hidden md:flex">Public Files</span>
         <i class="flex md:hidden! fa fa-regular fa-folder-open"></i>
       </li>
+      @auth
+      <li class="cursor-pointer" onclick="location.href = '/user/profile'">
+        <span class="hidden md:flex">Profile</span>
+        <i class="flex md:hidden! fa fa-user"></i>
+      </li>
+      @endauth
     </ul>
   </div>
   <div class="flex flex-row gap-5 md:gap-10 items-center h-full">

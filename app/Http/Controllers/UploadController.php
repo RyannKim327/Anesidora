@@ -29,7 +29,7 @@ class UploadController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'password' => 'nullable|string|min:4',
-            'expiration' => 'required|string|in:1h,24h,7d,30d,custom,0',
+            'expiration' => 'required|string|in:1h,24h,7d,30d,custom,0,lifetime',
         ]);
 
         if ($validator->fails()) {
@@ -77,7 +77,7 @@ class UploadController extends Controller
                 '24h' => now()->addDay(),
                 '7d' => now()->addDays(7),
                 '30d' => now()->addDays(30),
-                '0' => null,
+                'lifetime', '0' => null,
                 default => null
             };
 

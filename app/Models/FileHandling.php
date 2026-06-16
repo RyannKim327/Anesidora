@@ -28,6 +28,15 @@ class FileHandling extends Model
   ];
 
   /**
+   * The attributes that should be cast.
+   *
+   * @var array<string, string>
+   */
+  protected $casts = [
+    'expiration' => 'datetime',
+  ];
+
+  /**
    * Get the user that owns the file.
    */
   public function user(): BelongsTo
