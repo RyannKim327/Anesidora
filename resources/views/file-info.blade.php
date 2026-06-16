@@ -1,7 +1,7 @@
 @extends('app')
 
 @section('title', 'File Info')
-    
+
 @section('content')
 <div class="flex flex-col items-center justify-center min-h-[60vh] w-full max-w-4xl mx-auto px-4">
     <!-- File Info Card -->
@@ -77,7 +77,7 @@
                 </div>
                 <h2 class="text-2xl font-bold text-white mb-2">Protected File</h2>
                 <p class="text-slate-400 mb-8">This file is encrypted. Please enter the password to access its contents.</p>
-                
+
                 <form id="password-form" class="space-y-4">
                     <div class="relative">
                         <input type="password" id="file-password" required
@@ -121,7 +121,7 @@
         const passwordModal = document.getElementById('password-modal');
         const passwordForm = document.getElementById('password-form');
         const passwordError = document.getElementById('password-error');
-        
+
         try {
             const response = await fetch(`/api/file/${fileId}`);
             const file = await response.json();
@@ -135,22 +135,22 @@
             document.getElementById('file-name').textContent = file.file;
             document.getElementById('file-description').textContent = file.description || 'No description provided.';
             document.getElementById('file-downloads').textContent = (file.downloads || 0).toLocaleString();
-            
+
             const extension = file.file.split('.').pop();
             document.getElementById('file-type').textContent = `${extension} File`;
-            
+
             // Set icon based on type
             const iconElement = document.getElementById('file-icon');
             if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(extension.toLowerCase())) iconElement.className = 'fa fa-file-image-o text-4xl text-blue-400';
             else if (['pdf'].includes(extension.toLowerCase())) iconElement.className = 'fa fa-file-pdf-o text-4xl text-red-400';
             else if (['doc', 'docx'].includes(extension.toLowerCase())) iconElement.className = 'fa fa-file-word-o text-4xl text-blue-500';
             else if (['xls', 'xlsx'].includes(extension.toLowerCase())) iconElement.className = 'fa fa-file-excel-o text-4xl text-green-500';
-            
+
             // Format date
             if (file.expiration) {
                 const expDate = new Date(file.expiration);
-                document.getElementById('file-expiration').textContent = expDate.toLocaleDateString(undefined, { 
-                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                document.getElementById('file-expiration').textContent = expDate.toLocaleDateString(undefined, {
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
             } else {
                 document.getElementById('file-expiration').textContent = 'Never';
@@ -163,11 +163,11 @@
                     <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                     <span class="text-slate-300 font-medium">Protected</span>
                 `;
-                
+
                 passwordForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const password = document.getElementById('file-password').value;
-                    
+
                     if (password === file.password) {
                         passwordModal.classList.add('hidden');
                         fileCard.classList.remove('hidden');
@@ -179,10 +179,49 @@
                 fileCard.classList.remove('hidden');
             }
 
-            document.getElementById('download-btn').onclick = () => {
-                alert(`Starting download for ${file.file}...`);
-                // Note: To truly download from Telegram, we'd need to use getFile and then the bot file link
-                // For now, we'll just show the alert
+            document.getElementById('download-btn').onclick = async () => {
+                const password = document.getElementById('file-password').value;
+                const btn = document.getElementById('download-btn');
+                const originalText = btn.innerHTML;
+                
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-3"></i> Preparing...';
+
+                try {
+                    const response = await fetch(`/api/file/${fileId}/download`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ password })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        // Create a temporary link to trigger the download
+                        const link = document.createElement('a');
+                        link.href = result.download_url;
+                        link.download = result.file_name;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Update download count UI
+                        const downloadsSpan = document.getElementById('file-downloads');
+                        downloadsSpan.textContent = (parseInt(downloadsSpan.textContent.replace(/,/g, '')) + 1).toLocaleString();
+                    } else {
+                        alert(result.error || 'Download failed. Please check your credentials.');
+                    }
+                } catch (error) {
+                    console.error('Download error:', error);
+                    alert('A network error occurred. Please try again.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
             };
 
         } catch (error) {
