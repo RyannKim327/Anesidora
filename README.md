@@ -20,8 +20,9 @@ Anesidora is a secure, premium file-sharing and file hosting web application bui
 ## 💡 Project Context & Idea
 The primary mission of **Anesidora** is to make sharing files a premium, secure, and interactive experience:
 1. **Gift-Giving Paradigm:** Sharing a file is treated as sending a gift. Each shared asset can include a title, detailed description, and custom security settings.
-2. **Robust Security:** Support for password-protecting downloads, setting strict link expiration limits, and managing visibility via public/private URLs.
-3. **Optimized Delivery:** Built with Laravel's Blade engine for high-performance server-side rendering and seamless user interaction.
+2. **User Profiles:** Personalized dashboard for users to manage their shared "gifts," view detailed statistics, and track downloads.
+3. **Robust Security:** Support for password-protecting downloads, setting strict link expiration limits, managing visibility via public/private URLs, and **request throttling** to prevent automated abuse.
+4. **Optimized Delivery:** Built with Laravel's Blade engine for high-performance server-side rendering and seamless user interaction.
 
 ---
 
@@ -50,7 +51,7 @@ Anesidora uses a clean, relational schema to manage users and their shared "gift
 erDiagram
     USER ||--o{ FILE_HANDLING : owns
     USER {
-        unsigned_bigint id PK
+        uuid id PK
         string name
         string email UK
         timestamp email_verified_at
@@ -61,7 +62,7 @@ erDiagram
     FILE_HANDLING {
         unsigned_bigint id PK
         string file "Original filename"
-        unsigned_bigint user_id FK
+        uuid user_id FK
         string private_url "Telegram file_id"
         string public_url "Unique hash"
         text description
@@ -110,6 +111,7 @@ npm run dev
 * 📂 **[resources/views/](file:///home/mpop/Programming/php/Anesidora/resources/views)** — Laravel Blade Templates
   * 📄 **[app.blade.php](file:///home/mpop/Programming/php/Anesidora/resources/views/app.blade.php)** — Base layout file.
   * 📄 **[upload.blade.php](file:///home/mpop/Programming/php/Anesidora/resources/views/upload.blade.php)** — File upload interface.
+  * 📄 **[profile.blade.php](file:///home/mpop/Programming/php/Anesidora/resources/views/profile.blade.php)** — User profile and statistics.
   * 📄 **[index.blade.php](file:///home/mpop/Programming/php/Anesidora/resources/views/index.blade.php)** — Dashboard and file listing.
   * 📂 **[components/](file:///home/mpop/Programming/php/Anesidora/resources/views/components)** — Reusable Blade components.
 * 📂 **[routes/](file:///home/mpop/Programming/php/Anesidora/routes)**
