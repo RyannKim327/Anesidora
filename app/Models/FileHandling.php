@@ -24,6 +24,7 @@ class FileHandling extends Model
     'description',
     'password',
     'expiration',
+    'downloads',
   ];
 
   /**

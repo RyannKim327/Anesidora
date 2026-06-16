@@ -87,6 +87,7 @@
     const submitBtn = document.getElementById('upload-submit');
     const errorDiv = document.getElementById('upload-errors');
     const successDiv = document.getElementById('upload-success');
+    let fileType = "doc";
 
     // Update file name on selection
     fileInput.addEventListener('change', (e) => {
@@ -95,9 +96,12 @@
             fileNameDisplay.textContent = file.name;
             // Auto-fill title if empty
             const titleInput = document.getElementById('name');
-            if (!titleInput.value) {
-                titleInput.value = file.name.split('.').slice(0, -1).join('.');
+            titleInput.value = file.name.split('.').slice(0, -1).join('.');
+            if(file.type){
+                const type = file.type.split('/')
+                fileType = type[type.length]
             }
+            console.log(fileType)
         }
     });
 
@@ -138,7 +142,7 @@
 
         const formData = new FormData(form);
         const xhr = new XMLHttpRequest();
-
+        formData.set('name', `${formData.get('name')}.${fileType}`)
         // Progress Handler
         xhr.upload.addEventListener('progress', (e) => {
             if (e.lengthComputable) {
