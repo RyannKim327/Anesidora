@@ -2,7 +2,31 @@
 
 All notable changes to the **Anesidora** project will be documented in this file.
 
-## [1.1.0] - 2026-06-06
+## [1.2.0] - Unreleased
+### Added
+- Migrated the application back to **Laravel Blade** templates from Vue.js.
+- Restored traditional server-side routing and Blade-based views.
+- Implemented **Telegram API** integration for secure file storage and retrieval.
+- Added support for file **password protection** on downloads.
+- Added file **expiration limits** (1h, 24h, 7d, 30d) for shared gifts.
+- Added **download counter** to track file popularity.
+- Implemented **User Registration and Login** with session management.
+- Added API endpoints for retrieving **top files** and **public files**.
+- Added file sorting functionality based on download counts.
+- Created `FileHandling` model and migration for managing file metadata.
+
+### Changed
+- Reverted Single Page Application (SPA) architecture to multi-page Blade architecture.
+- Updated `UploadController` to handle Telegram uploads and secure link generation.
+- Updated database schema to include download tracking and enhanced file metadata.
+
+### Removed
+- Removed **Vue.js 3**, **Vue Router**, and associated frontend dependencies.
+- Removed SPA-specific catch-all routes in favor of explicit Blade routes.
+
+---
+
+## [1.1.0] - 2026-06-06 - Unreleased
 ### Added
 - Integrated **Vue.js 3** (Composition API) as the primary frontend framework.
 - Added **Vue Router** for client-side navigation.
