@@ -24,7 +24,7 @@ class FileHandlingFactory extends Factory
       'user_id' => User::factory(),
       'private_url' => Str::random(40),
       'public_url' => Str::random(10),
-      'description' => $this->faker->sentence(),
+      'description' => null,
       'password' => null,
       'expiration' => now()->addDays(7),
     ];

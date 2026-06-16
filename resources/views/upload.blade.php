@@ -39,14 +39,14 @@
                         <option value="24h" selected>24 Hours</option>
                         <option value="7d">7 Days</option>
                         <option value="30d">30 Days</option>
-                        <option value="lifetime">Lifetime</option>
+                        <option value="0">Lifetime</option>
                     </select>
                 </div>
             </div>
 
             <div class="flex flex-col gap-1">
                 <label for="description" class="text-sm font-bold text-[#64748b] uppercase tracking-wider">Description</label>
-                <textarea id="description" name="description" placeholder="What's in this file?" rows="3" required class="bg-[#1e293b] border border-[#4c58a6] rounded-xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] text-[#f8fafc] resize-none"></textarea>
+                <textarea id="description" name="description" placeholder="What's in this file?" rows="3" class="bg-[#1e293b] border border-[#4c58a6] rounded-xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] text-[#f8fafc] resize-none"></textarea>
             </div>
 
             <div class="flex flex-col gap-1">
