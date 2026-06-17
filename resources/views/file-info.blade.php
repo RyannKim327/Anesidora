@@ -50,7 +50,11 @@
                     <i class="fa fa-download mr-3 group-hover:animate-bounce"></i>
                     Download Now
                 </button>
-                <button onclick="window.history.back()" class="px-8 py-4 border border-slate-600 text-lg font-bold rounded-2xl text-slate-300 hover:bg-slate-700/50 transition duration-150 ease-in-out">
+                <button id="share-btn" class="flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-4 border border-slate-600 text-lg font-bold rounded-2xl text-slate-300 hover:bg-slate-700/50 transition duration-150 ease-in-out group">
+                    <i class="fa fa-share-alt mr-3 group-hover:scale-110 transition-transform"></i>
+                    Share Link
+                </button>
+                <button onclick="window.history.back()" class="flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-4 border border-slate-600 text-lg font-bold rounded-2xl text-slate-300 hover:bg-slate-700/50 transition duration-150 ease-in-out">
                     Back
                 </button>
             </div>
@@ -91,9 +95,14 @@
                     <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition duration-150 ease-in-out shadow-lg shadow-blue-900/20">
                         Unlock File
                     </button>
-                    <button type="button" onclick="location.href='/'" class="w-full py-4 text-slate-400 font-medium hover:text-slate-200 transition duration-150">
-                        Cancel
-                    </button>
+                    <div class="flex gap-4">
+                        <button type="button" id="share-btn-modal" class="flex-1 py-4 border border-slate-600 text-slate-300 font-bold rounded-2xl hover:bg-slate-700/50 transition duration-150 ease-in-out">
+                            <i class="fa fa-share-alt mr-2"></i> Share
+                        </button>
+                        <button type="button" onclick="location.href='/'" class="flex-1 py-4 text-slate-400 font-medium hover:text-slate-200 transition duration-150">
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -183,7 +192,7 @@
                 const password = document.getElementById('file-password').value;
                 const btn = document.getElementById('download-btn');
                 const originalText = btn.innerHTML;
-                
+
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-3"></i> Preparing...';
 
@@ -208,7 +217,7 @@
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
-                        
+
                         // Update download count UI
                         const downloadsSpan = document.getElementById('file-downloads');
                         downloadsSpan.textContent = (parseInt(downloadsSpan.textContent.replace(/,/g, '')) + 1).toLocaleString();
@@ -223,6 +232,24 @@
                     btn.innerHTML = originalText;
                 }
             };
+
+            // Share functionality
+            const handleShare = (btnId) => {
+                const btn = document.getElementById(btnId);
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    const originalContent = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa fa-check mr-3 text-green-400"></i> Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            };
+
+            document.getElementById('share-btn').onclick = () => handleShare('share-btn');
+            document.getElementById('share-btn-modal').onclick = () => handleShare('share-btn-modal');
 
         } catch (error) {
             console.error('Error fetching file:', error);
