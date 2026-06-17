@@ -95,7 +95,7 @@ class UploadController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'File uploaded and registered successfully!',
-                'redirect' => '/',
+                'redirect' => '/file/'.$fileRecord->public_url,
                 'file_id' => $fileRecord->public_url,
             ]);
 

@@ -98,8 +98,59 @@
             const titleInput = document.getElementById('name');
             titleInput.value = file.name.split('.').slice(0, -1).join('.');
             if(file.type){
+                const types = {
+                    "plain": "txt",
+                    "html": "html",
+                    "css": "css",
+                    "javascript": "js",
+                    "json": "json",
+                    "xml": "xml",
+
+                    "jpeg": "jpg",
+                    "png": "png",
+                    "gif": "gif",
+                    "webp": "webp",
+                    "svg+xml": "svg",
+                    "bmp": "bmp",
+                    "tiff": "tif",
+
+                    "mpeg": "mp3",   // audio/mpeg is often mp3
+                    "wav": "wav",
+                    "ogg": "ogg",
+                    "aac": "aac",
+                    "flac": "flac",
+
+                    "mp4": "mp4",
+                    "x-msvideo": "avi",
+                    "webm": "webm",
+                    "mpeg2": "mpeg",
+
+                    "msword": "doc",
+                    "vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+                    "vnd.ms-excel": "xls",
+                    "vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+                    "vnd.ms-powerpoint": "ppt",
+                    "vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+                    "vnd.oasis.opendocument.text": "odt",
+                    "vnd.oasis.opendocument.spreadsheet": "ods",
+                    "vnd.oasis.opendocument.presentation": "odp",
+                    "vnd.oasis.opendocument.graphics": "odg",
+                    "application/zip": "zip",
+                    "x-tar": "tar",
+                    "gzip": "gz",
+                    "x-7z-compressed": "7z",
+                    "x-rar-compressed": "rar",
+
+                };
                 const type = file.type.split('/')
-                fileType = type[type.length]
+                fileType = types[type[type.length - 1] || type[type.length - 1]]
+                if(!fileType){
+                    const ext = file.name.split(".")
+                    fileType = ext[ext.length - 1]
+                }
+            }else{
+                const type = file.name.split(".")
+                fileType = type[type.length - 1]
             }
             console.log(fileType)
         }
