@@ -5,11 +5,13 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Cache;
 
-class Throttle{
-    public function handle($request, Closure $next){
+class Throttle
+{
+    public function handle($request, Closure $next)
+    {
         $key = 'throttle:'.$request->ip();
 
-        $maxAttempts = 65;
+        $maxAttempts = 60;
         $decaySeconds = 60;
 
         $attempts = Cache::get($key, 0);
