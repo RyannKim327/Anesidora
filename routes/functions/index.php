@@ -21,6 +21,10 @@ Route::get('/file/{id}', function (Request $request, $id) {
     return view('file-info', ['id' => $id]);
 });
 
+Route::get('/search/{query}', function (Request $request, $query) {
+    return view('search', ['search' => $query]);
+});
+
 Route::get('/user/profile/{id?}', function (Request $request, $id = null) {
 
     if ($id) {

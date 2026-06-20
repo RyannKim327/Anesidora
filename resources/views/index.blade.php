@@ -11,7 +11,7 @@
 				<img src="assets/icon.png" alt="">
 			</div>
 		</div>
-		<div class="flex flex-col gap-3 min-h-screen">
+		<div id="top-base" class="flex flex-col gap-3 min-h-screen hidden">
 			<span class="text-[1.5rem]">Top Downloads</span>
 			<div id="file-lists" class="flex flex-row flex-wrap gap-2 w-full"></div>
 		</div>
@@ -21,6 +21,11 @@
 		const main = document.getElementById("file-lists")
 		async function main_loader(){
 			const files = await fetch('/api/files/top').then((r) => { return r.json() })
+
+            if(files.length > 0){
+                document.getElementById('top-base').classList.remove("hidden")
+            }
+
 			files.forEach(file => {
 				const card = document.createElement("div")
 				card.classList.add(

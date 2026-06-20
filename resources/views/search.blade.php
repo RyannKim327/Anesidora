@@ -1,24 +1,24 @@
 @extends('app')
 
-@section('title', 'Public Files')
-
+@section('title', 'Search ' . $search)
+    
 @section('content')
-    <div class="flex flex-col gap-3 min-h-screen">
-        <div class="text-left mb-10">
-            <h1 class="text-xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-600 mb-4">
-                Public Files
-            </h1>
-        </div>
-		<div id="file-lists" class="flex flex-row flex-wrap gap-2 w-full"></div>
+  <div class="flex flex-col gap-3 min-h-screen">
+    <div class="text-left mb-10">
+      <h1 class="text-xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-600 mb-4">
+        Search Results for: {{ $search }}
+      </h1>
+    </div>
+	<div id="file-lists" class="flex flex-row flex-wrap gap-2 w-full"></div>
 	</div>
 	<script>
 		const main = document.getElementById("file-lists")
 		async function main_loader(){
-			const files = await fetch('/api/files/public').then((r) => { return r.json() })
-			if(files.length <= 0){
-			    main.innerText = "There is no public files yet"
-			    return
-			}
+			const files = await fetch('/api/files/search/{{ $search }}').then((r) => { return r.json() })
+	    if(files.length <= 0){
+	      main.innerText = "No Files searched related to {{ $search }}"
+	      return
+	    }
 			files.forEach(file => {
 				const card = document.createElement("div")
 				card.classList.add(
@@ -84,5 +84,6 @@
 		}
 		main_loader()
 	</script>
+
 
 @endsection

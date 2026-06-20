@@ -23,7 +23,7 @@
     </ul>
   </div>
   <div class="flex flex-row gap-5 md:gap-10 items-center h-full">
-    <input placeholder="Search File" class="border-[#4c58a6] border rounded-full px-5 py-1" />
+    <input placeholder="Search File" class="border-[#4c58a6] border rounded-full px-5 py-1" onchange="location.href = '/search/' + this.value" />
     @auth
       <div class="flex flex-row gap-2">
         <button onclick="location.href='/upload'" class="bg-[#3B82F6] text-[#f8fafc] rounded-full px-5 py-1">Upload</button>

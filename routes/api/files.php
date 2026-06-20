@@ -34,6 +34,22 @@ Route::get('/api/files/public', function (Request $request) {
     return response()->json($files);
 });
 
+Route::get('/api/files/search/{query}', function (Request $request, $query) {
+    $files = FileHandling::where('file', 'LIKE', '%' . $query . '%')
+        ->whereNull('password')
+        ->where(function ($query) {
+            $query->whereNull('expiration')
+                ->orWhere('expiration', '>', now());
+        })
+        ->orderBy('downloads', 'desc')
+        ->latest()
+        ->take(20)
+        ->get();
+
+    return response()->json($files);
+
+});
+
 Route::get('/api/file/{id}', function (Request $request, $id) {
     $file = FileHandling::where('public_url', $id)->first();
 
