@@ -47,11 +47,10 @@ Route::get('/api/files/search/{query}', function (Request $request, $query) {
         ->get();
 
     return response()->json($files);
-
 });
 
 Route::get('/api/file/{id}', function (Request $request, $id) {
-    $file = FileHandling::where('public_url', $id)->first();
+    $file = FileHandling::with(['user:id,name'])->where('public_url', $id)->first();
 
     if (! $file) {
         return response()->json([

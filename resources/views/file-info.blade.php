@@ -25,6 +25,10 @@
             </div>
 
             <div class="space-y-6 mb-10">
+                <p id="uploader">Anonymous</p>
+            </div>
+
+            <div class="space-y-6 mb-10">
                 <div>
                     <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-2">Description</h3>
                     <p id="file-description" class="text-lg text-slate-200 leading-relaxed"></p>
@@ -142,6 +146,7 @@
 
             // Populate file info
             document.getElementById('file-name').textContent = file.file;
+            document.getElementById("uploader").textContent = `Uploaded by ${file.user.name || "Anonymous"}`
             document.getElementById('file-description').textContent = file.description || 'No description provided.';
             document.getElementById('file-downloads').textContent = (file.downloads || 0).toLocaleString();
 
