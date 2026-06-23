@@ -12,20 +12,12 @@ use Illuminate\Support\Str;
 class UploadController extends Controller
 {
     /**
-     * Show the upload page.
-     */
-    public function index()
-    {
-        return view('upload');
-    }
-
-    /**
      * Store a newly created file share using Telegram API.
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|max:102400', // max 100MB
+            'file' => 'nullable|file|max:102400', // max 100MB
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'password' => 'nullable|string|min:4',
@@ -81,6 +73,12 @@ class UploadController extends Controller
                 default => null
             };
 
+            $password = $request->password;
+
+            if (! empty($password)) {
+                $password = hash('sha256', $password);
+            }
+
             // Create record in database
             $fileRecord = FileHandling::create([
                 'file' => $request->name,
@@ -88,7 +86,7 @@ class UploadController extends Controller
                 'private_url' => $fileId, // Use Telegram file_id as internal reference
                 'public_url' => Str::random(12), // Unique hash for our app's public link
                 'description' => $request->description ?? 'No description Provided',
-                'password' => $request->password, // Note: Should probably hash this in production
+                'password' => $password, // Note: Should probably hash this in production
                 'expiration' => $expirationDate,
             ]);
 
@@ -99,7 +97,7 @@ class UploadController extends Controller
                 'file_id' => $fileRecord->public_url,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'An internal error occurred: '.$e->getMessage(),

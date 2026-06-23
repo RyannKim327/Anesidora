@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\FileHandling;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,23 @@ Route::get('/files', function (Request $request) {
 });
 
 Route::get('/file/{id}', function (Request $request, $id) {
+    $file = FileHandling::with(['user:id,name'])->where('public_url', $id)->first();
+    if ($file['password'] != null) {
+        return view('password-protect', ['id' => $id]);
+    }
+
     return view('file-info', ['id' => $id]);
+});
+
+Route::post('/file/{id}', function (Request $request, $id) {
+    $file = FileHandling::with(['user:id,name'])->where('public_url', $id)->first();
+    $req = $request->input('password');
+
+    if (hash('sha256', $req) == $file['password']) {
+        return view('file-info', ['id' => $id, 'password' => $req]);
+    }
+
+    return view('password-protect', ['id' => $id, 'error' => 'Invalid Password']);
 });
 
 Route::get('/search/{query}', function (Request $request, $query) {
@@ -53,3 +70,7 @@ Route::get('/user/profile/{id?}', function (Request $request, $id = null) {
     ]);
 
 })->name('profile');
+
+Route::get('/upload', function (Request $request) {
+    return view('upload');
+});

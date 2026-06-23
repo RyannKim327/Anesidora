@@ -35,7 +35,7 @@ Route::get('/api/files/public', function (Request $request) {
 });
 
 Route::get('/api/files/search/{query}', function (Request $request, $query) {
-    $files = FileHandling::where('file', 'LIKE', '%' . $query . '%')
+    $files = FileHandling::where('file', 'LIKE', '%'.$query.'%')
         ->whereNull('password')
         ->where(function ($query) {
             $query->whereNull('expiration')
@@ -49,6 +49,38 @@ Route::get('/api/files/search/{query}', function (Request $request, $query) {
     return response()->json($files);
 });
 
+Route::post('/api/file/{id}', function (Request $request, $id) {
+    $file = FileHandling::with(['user:id,name'])->where('public_url', $id)->first();
+    $body = $request->all();
+
+    if (! $file) {
+        return response()->json([
+            'error' => 'File not found',
+        ], 404);
+    }
+
+    if (! $file->expiration || ! $file->expiration->isFuture()) {
+        return response()->json([
+            'error' => 'File might be expired',
+        ], 403);
+    }
+
+    // Validate password
+    $providedPassword = $body['password'] ?? '';
+    $actualPassword = $file->password ?? '';
+
+    if ($actualPassword !== $providedPassword) {
+        return response()->json([
+            'error' => 'Invalid password',
+        ], 401);
+    }
+
+    // Return file info (password removed for security)
+    $file->password = null;
+
+    return response()->json($file);
+});
+
 Route::get('/api/file/{id}', function (Request $request, $id) {
     $file = FileHandling::with(['user:id,name'])->where('public_url', $id)->first();
 
@@ -58,13 +90,23 @@ Route::get('/api/file/{id}', function (Request $request, $id) {
         ], 404);
     }
 
-    if (! $file->expiration || $file->expiration->isFuture()) {
-        return response()->json($file);
+    if (! $file->expiration || ! $file->expiration->isFuture()) {
+        return response()->json([
+            'error' => 'File might be expired',
+        ], 403);
     }
 
+    // Return only basic info and secured status - not the actual file data
+    // The actual file data should only be accessible via POST with password
     return response()->json([
-        'error' => 'File might be expired',
-    ], 403);
+        'id' => $file->id,
+        'file' => $file->file,
+        'secured' => ! empty($file->password),
+        'expiration' => $file->expiration,
+        'user' => $file->user,
+        // Don't return actual file data like description, downloads, etc.
+        // These should only be accessible after password validation via POST
+    ]);
 });
 
 Route::post('/api/file/{id}/download', function (Request $request, $id) {
@@ -75,9 +117,10 @@ Route::post('/api/file/{id}/download', function (Request $request, $id) {
     }
 
     // Verify password if set
-    if ($file->password && $request->password !== $file->password) {
-        return response()->json(['error' => 'Invalid password'], 403);
-    }
+    /* if ($file->password && $request->password !== $file->password) { */
+    /*     return response()->json(['error' => 'Invalid password'], 403); */
+    /* } */
+
     if (! $file->expiration || $file->expiration->isFuture()) {
         // Increment downloads
         $file->increment('downloads');
@@ -112,4 +155,4 @@ Route::post('/api/file/{id}/download', function (Request $request, $id) {
     }
 });
 
-Route::post('/api/file/upload', [UploadController::class, 'store']);
+Route::post('/api/upload', [UploadController::class, 'store']);

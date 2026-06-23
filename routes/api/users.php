@@ -47,7 +47,7 @@ Route::post('/api/register', function (Request $request) {
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-    ]);
+     ]);
 
     Auth::login($user);
 

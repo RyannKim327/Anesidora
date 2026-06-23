@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex flex-col items-center justify-center min-h-[60vh] w-full max-w-4xl mx-auto px-4">
     <!-- File Info Card -->
-    <div id="file-card" class="hidden w-full bg-slate-800/50 rounded-3xl border border-slate-700 shadow-2xl backdrop-blur-sm overflow-hidden animate-fade-in">
+    <div id="file-card" class="w-full bg-slate-800/50 rounded-3xl border border-slate-700 shadow-2xl backdrop-blur-sm overflow-hidden animate-fade-in">
         <div class="p-8 md:p-12">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
                 <div class="flex flex-row items-center gap-4">
@@ -64,53 +64,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Error State -->
-    <div id="error-card" class="hidden text-center p-12 bg-slate-800/50 rounded-3xl border border-red-500/30 shadow-2xl backdrop-blur-sm">
-        <i class="fa fa-exclamation-triangle text-6xl text-red-400 mb-6"></i>
-        <h2 class="text-2xl font-bold text-white mb-2">File Not Found</h2>
-        <p class="text-slate-400 mb-8">The file you're looking for might have expired or doesn't exist.</p>
-        <a href="/" class="inline-flex items-center px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-full transition duration-150 ease-in-out">
-            Return Home
-        </a>
-    </div>
-
-    <!-- Password Modal -->
-    <div id="password-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
-        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"></div>
-        <div class="relative w-full max-w-md bg-slate-800 rounded-3xl border border-slate-700 shadow-2xl overflow-hidden animate-zoom-in">
-            <div class="p-8 text-center">
-                <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
-                    <i class="fa fa-lock text-4xl text-blue-400"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-white mb-2">Protected File</h2>
-                <p class="text-slate-400 mb-8">This file is encrypted. Please enter the password to access its contents.</p>
-
-                <form id="password-form" class="space-y-4">
-                    <div class="relative">
-                        <input type="password" id="file-password" required
-                            class="w-full px-6 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
-                            placeholder="Enter password">
-                        <i class="fa fa-key absolute right-6 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                    </div>
-                    <div id="password-error" class="hidden text-red-400 text-sm font-medium">
-                        Incorrect password. Please try again.
-                    </div>
-                    <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition duration-150 ease-in-out shadow-lg shadow-blue-900/20">
-                        Unlock File
-                    </button>
-                    <div class="flex gap-4">
-                        <button type="button" id="share-btn-modal" class="flex-1 py-4 border border-slate-600 text-slate-300 font-bold rounded-2xl hover:bg-slate-700/50 transition duration-150 ease-in-out">
-                            <i class="fa fa-share-alt mr-2"></i> Share
-                        </button>
-                        <button type="button" onclick="location.href='/'" class="flex-1 py-4 text-slate-400 font-medium hover:text-slate-200 transition duration-150">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
 
 <style>
@@ -130,11 +83,6 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const fileId = "{{ $id }}";
         const fileCard = document.getElementById('file-card');
-        const errorCard = document.getElementById('error-card');
-        const passwordModal = document.getElementById('password-modal');
-        const passwordForm = document.getElementById('password-form');
-        const passwordError = document.getElementById('password-error');
-
         try {
             const response = await fetch(`/api/file/${fileId}`);
             const file = await response.json();
@@ -144,7 +92,10 @@
                 return;
             }
 
-            // Populate file info
+            // Show file info directly for unprotected files
+            if (fileCard) fileCard.classList.remove('hidden');
+
+            // Populate file info (will be shown when unlocked or if unprotected)
             document.getElementById('file-name').textContent = file.file;
             document.getElementById("uploader").textContent = `Uploaded by ${file.user.name || "Anonymous"}`
             document.getElementById('file-description').textContent = file.description || 'No description provided.';
@@ -170,31 +121,7 @@
                 document.getElementById('file-expiration').textContent = 'Never';
             }
 
-            // Handle protection
-            if (file.password) {
-                passwordModal.classList.remove('hidden');
-                document.getElementById('file-status').innerHTML = `
-                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                    <span class="text-slate-300 font-medium">Protected</span>
-                `;
-
-                passwordForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const password = document.getElementById('file-password').value;
-
-                    if (password === file.password) {
-                        passwordModal.classList.add('hidden');
-                        fileCard.classList.remove('hidden');
-                    } else {
-                        passwordError.classList.remove('hidden');
-                    }
-                });
-            } else {
-                fileCard.classList.remove('hidden');
-            }
-
             document.getElementById('download-btn').onclick = async () => {
-                const password = document.getElementById('file-password').value;
                 const btn = document.getElementById('download-btn');
                 const originalText = btn.innerHTML;
 
@@ -209,7 +136,6 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({ password })
                     });
 
                     const result = await response.json();
@@ -253,12 +179,16 @@
                 });
             };
 
-            document.getElementById('share-btn').onclick = () => handleShare('share-btn');
-            document.getElementById('share-btn-modal').onclick = () => handleShare('share-btn-modal');
+            if (document.getElementById('share-btn')) {
+                document.getElementById('share-btn').onclick = () => handleShare('share-btn');
+            }
+            if (document.getElementById('share-btn-modal')) {
+                document.getElementById('share-btn-modal').onclick = () => handleShare('share-btn-modal');
+            }
 
         } catch (error) {
             console.error('Error fetching file:', error);
-            errorCard.classList.remove('hidden');
+            if (errorCard) errorCard.classList.remove('hidden');
         }
     });
 </script>

@@ -223,7 +223,8 @@
                     const errorList = Object.values(response.errors).flat();
                     errorDiv.innerHTML = errorList.join('<br>');
                 } else {
-                    errorDiv.textContent = response.message || 'An error occurred during upload.';
+                    console.log(response)
+                    errorDiv.textContent = response.error || response.message || 'An error occurred during upload.';
                 }
                 progressContainer.classList.add('hidden');
             }
@@ -237,7 +238,7 @@
             progressContainer.classList.add('hidden');
         });
 
-        xhr.open('POST', '/api/file/upload');
+        xhr.open('POST', '/api/upload');
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         // CSRF Token is already in FormData from @csrf
 
